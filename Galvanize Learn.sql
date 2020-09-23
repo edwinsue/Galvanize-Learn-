@@ -68,3 +68,12 @@ SELECT
      END) AS duration
 FROM taxi_trips
 ORDER BY duration
+
+--##Revenues by vendor by rate code
+SELECT
+vendor_id,
+rate_code_id, 
+SUM(total_amount) AS total_revenues
+FROM taxi_trips
+GROUP BY rate_code_id, vendor_id
+ORDER BY vendor_id, total_revenues DESC
