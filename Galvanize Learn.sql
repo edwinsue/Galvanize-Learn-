@@ -77,3 +77,11 @@ SUM(total_amount) AS total_revenues
 FROM taxi_trips
 GROUP BY rate_code_id, vendor_id
 ORDER BY vendor_id, total_revenues DESC
+
+--##Trips with higher than average fare amounts
+SELECT
+*
+FROM taxi_trips 
+WHERE fare_amount > (SELECT AVG(fare_amount) FROM taxi_trips)
+ORDER BY fare_amount DESC
+
