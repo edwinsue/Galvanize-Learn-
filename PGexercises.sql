@@ -30,8 +30,21 @@ FROM facilities
 WHERE membercost > 0 
 AND membercost < (0.02 * monthlymaintenance)
  
---##
---##
---##
---##
---##
+--##7
+SELECT
+*
+FROM facilities
+WHERE name LIKE '%Tennis%'
+
+--##8
+SELECT
+MAX(joindate)
+FROM members
+
+--##9
+SELECT
+firstname,
+surname,
+joindate
+FROM members
+WHERE joindate = (SELECT MAX(joindate) FROM members)
