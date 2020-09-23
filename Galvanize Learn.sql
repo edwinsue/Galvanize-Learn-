@@ -60,3 +60,11 @@ SELECT
 FROM base 
 WHERE tip_percentage = highest_tip_percentage
 
+--##CASE WHEN
+SELECT
+*,
+(CASE WHEN CAST(trip_distance AS NUMERIC) > 15 THEN 'Long'
+     ELSE 'Short'
+     END) AS duration
+FROM taxi_trips
+ORDER BY duration
