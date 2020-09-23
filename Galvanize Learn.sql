@@ -85,3 +85,20 @@ FROM taxi_trips
 WHERE fare_amount > (SELECT AVG(fare_amount) FROM taxi_trips)
 ORDER BY fare_amount DESC
 
+--##Trips with a fare amount within 10pct of the average
+SELECT
+*
+FROM taxi_trips 
+WHERE fare_amount BETWEEN 
+(SELECT AVG(fare_amount) * 0.90 FROM taxi_trips)
+AND 
+(SELECT AVG(fare_amount) * 1.10 FROM taxi_trips)
+ORDER BY fare_amount DESC
+
+--##Payment type totals
+SELECT
+fare_amount,
+payment_type,
+SUM(fare_amount) OVER (PARTITION BY payment_type) AS sum
+FROM taxi_trips
+ORDER BY payment_type
