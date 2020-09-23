@@ -39,3 +39,24 @@ SELECT
 FROM percentage_table
 GROUP BY 1,2
 ORDER BY 1
+
+
+--##Show all trip info WHERE tip % was highest for its rate code
+WITH base AS (
+    SELECT
+    *, 
+    FIRST_VALUE(tip_percentage) OVER (PARTITION BY rate_code_id ORDER BY tip_percentage DESC) AS highest_tip_percentage
+    FROM (
+        SELECT
+        *,
+        ROUND((tip_amount/fare_amount)*100, 2) AS tip_percentage
+        FROM taxi_trips
+        WHERE fare_amount != 0
+    ) AS foo
+)
+
+SELECT 
+* 
+FROM base 
+WHERE tip_percentage = highest_tip_percentage
+
