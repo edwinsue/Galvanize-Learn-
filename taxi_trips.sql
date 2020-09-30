@@ -6,17 +6,25 @@ FROM taxi_trips
 GROUP BY vendor_id
 ORDER BY 1
 
+
+
 --##Average Speed of Driver per Trip
 SELECT 
 ROUND ((trip_distance / ROUND((CAST((EXTRACT(EPOCH FROM (tpep_dropoff_datetime - tpep_pickup_datetime))/3600) AS NUMERIC)), 2)), 2) AS mph
 FROM taxi_trips
 WHERE ROUND((CAST((EXTRACT(EPOCH FROM (tpep_dropoff_datetime - tpep_pickup_datetime))/3600) AS NUMERIC)), 2) != 0
 
+
+
+
+
 --##Average Cost/Rider for Multi-Rider trips
 SELECT
 ROUND((SUM(total_amount) / SUM(passenger_count)), 2) AS avg_cost
 FROM taxi_trips
 WHERE passenger_count > 1 
+
+
 
 --##Highest Tip % by rate code
 WITH percentage_table AS (
@@ -39,6 +47,13 @@ SELECT
 FROM percentage_table
 GROUP BY 1,2
 ORDER BY 1
+
+
+
+
+
+
+
 
 
 --##Show all trip info WHERE tip % was highest for its rate code
