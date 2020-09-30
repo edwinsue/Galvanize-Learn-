@@ -37,14 +37,28 @@ WHERE f.name LIKE '%Tennis%Court%'
 ORDER BY 1,2
 
 --##5
-
+NOT SURE IF POSSIBLE WITHOUT JOINS
 
 --##6
-
+SELECT
+f.name AS name,
+SUM(CASE WHEN memid = 0 THEN f.guestcost * b.slots
+         WHEN memid != 0 THEN f.membercost * b.slots
+         END) AS totalrevenue
+FROM bookings b 
+LEFT JOIN facilities f ON b.facid = f.facid
+GROUP BY 1
+HAVING SUM(CASE WHEN memid = 0 THEN f.guestcost * b.slots
+                WHEN memid != 0 THEN f.membercost * b.slots
+                END) < 1000
+ORDER BY 2
  
 --##7
-
---##8
-
---##9
-
+SELECT 
+facid,
+EXTRACT(MONTH FROM starttime) AS month,
+SUM(slots)
+FROM bookings
+WHERE EXTRACT(YEAR FROM starttime) = 2019
+GROUP BY ROLLUP(1,2)
+ORDER BY 1,2
