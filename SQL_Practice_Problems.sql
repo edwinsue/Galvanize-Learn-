@@ -17,11 +17,10 @@ VALUES
 
 SELECT
 user_id,
-CASE WHEN setting = 'Y' THEN 0
-     ELSE 1
-     END AS setting
+MAX(CASE WHEN setting = 'Y' THEN 0 ELSE 1 END) AS setting
 FROM email
-HAVING MAX(setting) = 0
+GROUP BY 1
+HAVING MAX(CASE WHEN setting = 'Y' THEN 0 ELSE 1 END) = 0
 
 --Question #2:
 DROP TABLE IF EXISTS preferences;
