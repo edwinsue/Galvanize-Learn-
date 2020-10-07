@@ -142,6 +142,10 @@ LEFT JOIN shippers s ON o.ship_via = s.shipper_id
 WHERE order_id < 10300
 ORDER BY 1 
 
+
+-----------------------INTERMEDIATE---------------------
+
+
 --20. Categories, and the total products in each category
 SELECT
 c.category_name,
