@@ -141,3 +141,120 @@ FROM orders o
 LEFT JOIN shippers s ON o.ship_via = s.shipper_id
 WHERE order_id < 10300
 ORDER BY 1 
+
+--20. Categories, and the total products in each category
+SELECT
+c.category_name,
+COUNT(*) AS total_product
+FROM products p 
+LEFT JOIN categories c ON p.category_id = c.category_id 
+GROUP BY 1
+ORDER BY 2 DESC
+
+--21. Total customers per country/city
+SELECT
+country,
+city,
+COUNT(*) AS total_customers
+FROM customers 
+GROUP BY 1,2
+ORDER BY 3 DESC
+
+--22. Products that need reordering
+SELECT
+product_id,
+product_name
+FROM products
+WHERE units_in_stock < reorder_level
+ORDER BY 1
+
+--23. Products that need reordering, continued
+SELECT
+product_id,
+product_name
+FROM products
+WHERE (units_in_stock + units_on_order) <= reorder_level
+AND discontinued = 0
+ORDER BY 1
+
+--24. Customer list by region
+SELECT
+region,
+customer_id,
+company_name
+FROM customers
+GROUP BY region, customer_id
+ORDER BY region, customer_id
+
+--25. High freight charges
+SELECT
+ship_country,
+ROUND(CAST(AVG(freight) AS NUMERIC),2) AS freight_average
+FROM orders 
+GROUP BY 1 
+ORDER BY 2 DESC
+LIMIT 3
+
+--26. High freight charges - 2015
+SELECT
+ship_country,
+ROUND(CAST(AVG(freight) AS NUMERIC),2) AS freight_average
+FROM orders 
+WHERE EXTRACT(YEAR FROM order_date) = 1997
+GROUP BY 1 
+ORDER BY 2 DESC
+LIMIT 3
+
+--27. High freight charges with between
+SELECT
+order_id
+FROM orders
+WHERE EXTRACT(YEAR FROM order_date) = 1997 
+
+EXCEPT
+
+SELECT
+order_id
+FROM orders
+WHERE order_date BETWEEN '1/1/1997' AND '12/31/1997'
+
+--28. High freight charges - last year
+SELECT
+ship_country,
+ROUND(CAST(AVG(freight) AS NUMERIC),2) AS freight_average
+FROM orders
+WHERE order_date <= (SELECT MAX(order_date) FROM orders) 
+AND order_date >= (SELECT MAX(order_date) - INTERVAL '12 months' FROM orders) 
+GROUP BY 1
+ORDER BY 2 DESC
+LIMIT 3
+
+--29. Inventory list
+SELECT
+o.employee_id,
+e.last_name,
+o.order_id,
+p.product_name,
+SUM(od.quantity) AS quantity
+FROM orders o 
+LEFT JOIN employees e ON o.employee_id = e.employee_id 
+LEFT JOIN order_details od ON o.order_id = od.order_id
+LEFT JOIN products p ON od.product_id = p.product_id
+GROUP BY 3,1,2,4
+ORDER BY 3
+
+--30. Customers with no orders
+SELECT
+c.customer_id
+FROM customers c 
+LEFT JOIN orders o ON c.customer_id = o.customer_id
+WHERE o.order_id IS NULL 
+
+--31. Customers with no orders for EmployeeID 4
+SELECT
+customer_id,
+MAX(CASE WHEN employee_id = 4 THEN 1 ELSE 0 END) AS tally
+FROM orders o 
+GROUP BY customer_id
+HAVING MAX(CASE WHEN employee_id = 4 THEN 1 ELSE 0 END) = 0
+
