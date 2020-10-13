@@ -262,3 +262,49 @@ FROM orders o
 GROUP BY customer_id
 HAVING MAX(CASE WHEN employee_id = 4 THEN 1 ELSE 0 END) = 0
 
+
+------------------------ADVANCED-----------------------
+
+--32. High-value customers
+SELECT
+c.customer_id,
+c.company_name,
+od.order_id,
+ROUND(CAST(od.unit_price * od.quantity AS NUMERIC),2) AS order_amount
+FROM orders o
+LEFT JOIN customers c ON o.customer_id = c.customer_id
+LEFT JOIN order_details od ON o.order_id = od.order_id
+LEFT JOIN products p ON od.product_id = p.product_id
+WHERE od.unit_price * od.quantity >= 10000
+AND EXTRACT(YEAR FROM o.order_date) = 1998
+ORDER BY 4 DESC
+
+--33. High-value customers - total orders
+SELECT
+c.customer_id,
+c.company_name,
+SUM(ROUND(CAST(od.unit_price * od.quantity AS NUMERIC),2)) AS orders_amount
+FROM orders o
+LEFT JOIN customers c ON o.customer_id = c.customer_id
+LEFT JOIN order_details od ON o.order_id = od.order_id
+LEFT JOIN products p ON od.product_id = p.product_id
+WHERE EXTRACT(YEAR FROM o.order_date) = 1998
+GROUP BY 1,2
+HAVING SUM(ROUND(CAST(od.unit_price * od.quantity AS NUMERIC),2)) >= 15000
+ORDER BY 3 DESC
+
+--34. High-value customers - with discount
+SELECT
+c.customer_id,
+c.company_name,
+SUM(ROUND(CAST(od.unit_price * od.quantity * (1-od.discount) AS NUMERIC),2)) AS orders_amount
+FROM orders o
+LEFT JOIN customers c ON o.customer_id = c.customer_id
+LEFT JOIN order_details od ON o.order_id = od.order_id
+LEFT JOIN products p ON od.product_id = p.product_id
+WHERE EXTRACT(YEAR FROM o.order_date) = 1998
+GROUP BY 1,2
+HAVING SUM(ROUND(CAST(od.unit_price * od.quantity * (1-od.discount) AS NUMERIC),2)) >= 15000
+ORDER BY 3 DESC
+
+--35. Month-end orders
