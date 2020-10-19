@@ -308,3 +308,10 @@ HAVING SUM(ROUND(CAST(od.unit_price * od.quantity * (1-od.discount) AS NUMERIC),
 ORDER BY 3 DESC
 
 --35. Month-end orders
+SELECT
+employee_id,
+order_id,
+order_date
+FROM orders
+WHERE order_date = DATE(DATE_TRUNC('month', order_date) + INTERVAL '1 month -1 day')
+ORDER BY 1,2
