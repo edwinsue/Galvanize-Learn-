@@ -315,3 +315,54 @@ order_date
 FROM orders
 WHERE order_date = DATE(DATE_TRUNC('month', order_date) + INTERVAL '1 month -1 day')
 ORDER BY 1,2
+
+--36. Orders with many line items
+SELECT
+o.order_id,
+COUNT(od.product_id) AS line_items
+FROM orders o
+LEFT JOIN order_details od ON o.order_id = od.order_id
+GROUP BY 1
+ORDER BY 2 DESC 
+LIMIT 10
+
+--37. Orders - random assortment
+SELECT 
+order_id
+FROM orders 
+TABLESAMPLE BERNOULLI (2)
+
+--38. Orders - accidental double-entry
+SELECT
+o.order_id,
+COUNT(*) AS line_count
+FROM orders o 
+LEFT JOIN order_details od ON o.order_id = od.order_id
+WHERE o.employee_id = 3
+AND od.quantity > 60
+GROUP BY o.order_id
+HAVING COUNT(*) > 1
+
+--39. Orders - accidental double-entry details
+SELECT 
+* 
+FROM order_details
+WHERE order_id IN (
+	SELECT
+	o.order_id
+	FROM orders o 
+	LEFT JOIN order_details od ON o.order_id = od.order_id
+	WHERE o.employee_id = 3
+	AND od.quantity > 60
+	GROUP BY o.order_id
+	HAVING COUNT(*) > 1
+)
+
+--40. Orders - accidental double-entry details, derived table
+SELECT DISTINCT 
+
+--41. Late orders
+SELECT
+order_id
+FROM orders
+WHERE required_date < shipped_date
